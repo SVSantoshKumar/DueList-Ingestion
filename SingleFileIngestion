@@ -44,6 +44,9 @@ def process_file(file_key):
     # Read CSV into Pandas DataFrame
     df = pd.read_csv(io.BytesIO(file_content), encoding="ISO-8859-1")
     
+    # Clean column names: replace spaces and slashes with underscores
+    df.columns = [col.replace(" ", "_").replace("/", "_") for col in df.columns]
+
     # Add new date column
     df["extracted_date"] = datetime.strptime(file_date, "%d-%m-%Y").strftime("%Y-%m-%d")
     
@@ -56,10 +59,6 @@ def process_file(file_key):
     print(f"Uploading converted file to: {dest_key}")
     
     s3.put_object(Bucket=BUCKET_NAME, Key=dest_key, Body=parquet_buffer.getvalue())
-    
-    # Delete original CSV file from Source Folder
-    # print(f"Deleting original file: {file_key}")
-    # s3.delete_object(Bucket=BUCKET_NAME, Key=file_key)
     
     print("✅ Processing completed successfully!")
 
