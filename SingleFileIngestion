@@ -5,11 +5,11 @@ import io
 from datetime import datetime
 
 # AWS S3 Configuration
-AWS_ACCESS_KEY = "-----"
-AWS_SECRET_KEY = "-----"
+AWS_ACCESS_KEY = "---"
+AWS_SECRET_KEY = "---"
 BUCKET_NAME = "disha-sql-uat"
-SOURCE_FOLDER = "L0/collection-duelist/"
-DESTINATION_FOLDER = "L0/collection-duelist/DueList-History/Executed/"
+SOURCE_FOLDER = "L0/duelist/"
+DESTINATION_FOLDER = "L0/duelist/executed"
 
 # Regex to extract date from filename
 DATE_PATTERN = r'(\d{2}-\d{2}-\d{4})'
@@ -52,19 +52,19 @@ def process_file(file_key):
     df.to_parquet(parquet_buffer, index=False)
     
     # Upload Parquet file to Executed/DATE_FOLDER/
-    dest_key = f"{DESTINATION_FOLDER}{file_date}/DUELIST_COMPLETE_{file_date}.parquet"
+    dest_key = f"{DESTINATION_FOLDER}/DUELIST_{file_date}.parquet"
     print(f"Uploading converted file to: {dest_key}")
     
     s3.put_object(Bucket=BUCKET_NAME, Key=dest_key, Body=parquet_buffer.getvalue())
     
     # Delete original CSV file from Source Folder
-    print(f"Deleting original file: {file_key}")
-    s3.delete_object(Bucket=BUCKET_NAME, Key=file_key)
+    # print(f"Deleting original file: {file_key}")
+    # s3.delete_object(Bucket=BUCKET_NAME, Key=file_key)
     
     print("✅ Processing completed successfully!")
 
 # Define the filename
-file_name = "DUELIST_COMPLETE_02-03-2025.csv"
+file_name = "DUELIST_02-04-2025_02-04-2025.csv"
 file_key = f"{SOURCE_FOLDER}{file_name}"
 
 # Process the file
